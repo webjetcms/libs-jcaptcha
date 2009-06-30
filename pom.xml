@@ -40,8 +40,8 @@
     
     <licenses>
 		  <license>
-		    <name>LGPL</name>
-		    <url>http://www.gnu.org/licenses/lgpl.txt</url>
+		    <name>LGPL v2.1</name>
+		    <url>http://www.gnu.org/licenses/lgpl-2.1.txt</url>
 		  </license>
 		</licenses>
 		
@@ -78,12 +78,7 @@
 			<downloadUrl>http://sourceforge.net/projects/jcaptcha/</downloadUrl>        
       <site>
         <url>${siteDeployURL}</url>
-      </site>	  
-      <repository>
-        <id>archiva.forge.octo.com</id>
-        <name>OCTO Forge Release repository</name>
-        <url>dav:http://forge.octo.com/archiva/repository/forge-releases</url>
-      </repository>
+      </site>
       <snapshotRepository>
         <id>archiva.forge.octo.com</id>
         <name>OCTO Forge Snapshot repository</name>
@@ -98,13 +93,6 @@
             <subscribe>https://lists.sourceforge.net/lists/listinfo/jcaptcha-users</subscribe>
             <unsubscribe>https://lists.sourceforge.net/lists/listinfo/jcaptcha-users</unsubscribe>
             <archive>http://sourceforge.net/mailarchive/forum.php?forum=jcaptcha-users</archive>
-        </mailingList>
-        <mailingList>
-            <name>JCaptcha Developer List</name>
-            <post>jcaptcha-devs@lists.sourceforge.net</post>
-            <subscribe>https://lists.sourceforge.net/lists/listinfo/jcaptcha-devs</subscribe>
-            <unsubscribe>https://lists.sourceforge.net/lists/listinfo/jcaptcha-devs</unsubscribe>
-            <archive>http://sourceforge.net/mailarchive/forum.php?forum=jcaptcha-devs</archive>
         </mailingList>
     </mailingLists>
   
@@ -309,13 +297,6 @@
           </configuration>
         </plugin>	            
 	    </plugins>	    
-	    <!--extensions>
-         <extension>
-            <groupId>org.apache.maven.wagon</groupId>
-            <artifactId>wagon-webdav</artifactId>
-            <version>1.0-beta-2</version>
-         </extension>
-      </extensions-->
 	  </build>
     
 </project>
