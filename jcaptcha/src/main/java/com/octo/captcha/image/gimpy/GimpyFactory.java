@@ -20,17 +20,19 @@ import java.util.Random;
 /**
  * Factories for Gimpies. Built on top of WordGenerator and WordToImage. It uses thoses interfaces to build an
  * ImageCaptha answered by a String and for which the question is : Spell the word.
+ *
+ * WebJET CMS: trieda upravena ak by v slovniku neexistovalo slovo vygenerovanej dlzky, skusa to znova, kym toto
+ * slovo nedostane + failsafe aby sa to nezamotalo...
  */
 public class GimpyFactory extends com.octo.captcha.image.ImageCaptchaFactory {
 
     private Random myRandom = new SecureRandom();
     private WordToImage wordToImage;
     private WordGenerator wordGenerator;
-
     public static final String BUNDLE_QUESTION_KEY = Gimpy.class.getName();
 
     public GimpyFactory(WordGenerator generator, WordToImage word2image) {
-        if (word2image == null) {
+    	if (word2image == null) {
             throw new CaptchaException("Invalid configuration" +
                     " for a GimpyFactory : WordToImage can't be null");
         }
@@ -48,7 +50,8 @@ public class GimpyFactory extends com.octo.captcha.image.ImageCaptchaFactory {
      *
      * @return the image captcha with default locale
      */
-    public ImageCaptcha getImageCaptcha() {
+    @Override
+	public ImageCaptcha getImageCaptcha() {
         return getImageCaptcha(Locale.getDefault());
     }
 
@@ -62,16 +65,29 @@ public class GimpyFactory extends com.octo.captcha.image.ImageCaptchaFactory {
 
     /**
      * gimpies are ImageCaptcha
+     * WebJET CMS: pridana kontrola ze v pripade slovnikoveho generovania ak chyba slovo danej dlzky skusa generovat znova
      *
      * @return a pixCaptcha with the question :"spell the word"
      */
-    public ImageCaptcha getImageCaptcha(Locale locale) {
+    @Override
+	public ImageCaptcha getImageCaptcha(Locale locale) {
 
-        //length
-        Integer wordLength = getRandomLength();
-
-        String word = getWordGenerator().getWord(wordLength, locale);
-
+    	String word=null;
+    	int failSafeCounter=0;
+    	while (word==null && failSafeCounter++<30)
+    	{
+	    	try
+	    	{
+		        Integer wordLength = getRandomLength();
+		        word = getWordGenerator().getWord(wordLength, locale);
+	    	}
+	    	catch (CaptchaException ex)
+	    	{
+	    		word=null;
+	    	}
+    	}
+    	if (word==null)
+    		throw new CaptchaException("Nepodarilo sa vygenerovat text pre Captcha.");
         BufferedImage image = null;
         try {
             image = getWordToImage().getImage(word);
@@ -79,8 +95,7 @@ public class GimpyFactory extends com.octo.captcha.image.ImageCaptchaFactory {
             throw new CaptchaException(e);
         }
 
-        ImageCaptcha captcha = new Gimpy(CaptchaQuestionHelper.getQuestion(locale, BUNDLE_QUESTION_KEY),
-                image, word);
+        ImageCaptcha captcha = new Gimpy(CaptchaQuestionHelper.getQuestion(locale, BUNDLE_QUESTION_KEY), image, word);
         return captcha;
     }
 
@@ -89,9 +104,9 @@ public class GimpyFactory extends com.octo.captcha.image.ImageCaptchaFactory {
         int range = getWordToImage().getMaxAcceptedWordLength() -
                 getWordToImage().getMinAcceptedWordLength();
         int randomRange = range != 0 ? myRandom.nextInt(range + 1) : 0;
-        wordLength = new Integer(randomRange +
+        wordLength = Integer.valueOf(randomRange +
                 getWordToImage().getMinAcceptedWordLength());
-        return wordLength;
+      return wordLength;
     }
 
 }
